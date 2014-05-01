@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui" xmlns:f="http://java.sun.com/jsf/core"
+        >
+<h:body>
+    <ui:composition template="/pages/template/layout.xhtml">
+        <ui:define name="title">#{bundle['post.comments.header.title']}</ui:define>
+        <ui:define name="content">
+            <h:form id="form">
+                <h:panelGrid id="post" columns="2">
+                    <p:outputLabel for="header" value="#{bundle['post.header']}"/>
+                    <h:outputText id="header" value="#{postBean.post.header}"/>
+                    <p:outputLabel for="text" value="#{bundle['post.text']}"/>
+                    <h:outputText id="text" value="#{postBean.post.text}"/>
+                    <p:outputLabel for="date" value="#{bundle['post.date']}"/>
+                    <h:outputText id="date" value="#{postBean.post.date}">
+                        <f:convertDateTime pattern="#{bundle['post.date_format']}"/>
+                    </h:outputText>
+                    <p:outputLabel for="author" value="#{bundle['post.author']}"/>
+                    <h:outputText id="author" value="#{postBean.post.author.login}"/>
+                </h:panelGrid>
+                <p:dataTable id="comments"
+                             value="#{postBean.model}"
+                             var="comment"
+                             lazy="true"
+                             paginator="true"
+                             rowKey="#{comment.id}"
+                             rows="#{bundle['post.comments.rowsPerPage']}"
+                             rowsPerPageTemplate="#{bundle['post.comments.rowsPerPageTemplate']}"
+                             editable="true"
+                             paginatorPosition="bottom">
+                    <p:ajax event="rowEdit" listener="#{postBean.onEdit}"/>
+                    <p:column headerText="#{bundle['post.comments.header.text']}">
+                        <p:cellEditor>
+                            <f:facet name="output">
+                                <h:outputText value="#{comment.text}"/>
+                            </f:facet>
+                            <f:facet name="input">
+                                <p:inputTextarea value="#{comment.text}" maxlength="1000"/>
+                            </f:facet>
+                        </p:cellEditor>
+                    </p:column>
+                    <p:column headerText="#{bundle['post.comments.header.date']}" style="width: 20%">
+                        <h:outputText value="#{comment.date}">
+                            <f:convertDateTime pattern="#{bundle['post.comments.date_format']}"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column style="width:6%">
+                        <p:rowEditor/>
+                        <p:commandButton icon="ui-icon-trash"
+                                         title="#{bundle['comments.list.button.delete.title']}"
+                                         actionListener="#{postBean.delete(comment)}"
+                                         update=":form:comments"/>
+                    </p:column>
+                </p:dataTable>
+
+                <h:panelGrid columns="1">
+                    <p:commandButton id="addCommentButton" value="#{bundle['comments.list.button.add']}"
+                                     update=":addForm" icon="ui-icon-plus"
+                                     action="#{postBean.initAddForm()}"
+                                     oncomplete="PF('addComment').show()"/>
+                    <h:link outcome="postList"><h:outputText
+                            value="#{bundle['post.comments.to_messages_list']}"/></h:link>
+                </h:panelGrid>
+            </h:form>
+
+            <h:form id="addForm">
+                <p:dialog id="dialog"
+                          header="#{bundle['comments.list.dialog.create.header']}"
+                          widgetVar="addComment"
+                          resizable="false"
+                          width="600"
+                          modal="true">
+
+                    <h:panelGrid id="addGrid" width="100%">
+                        <h:outputText value="#{bundle['comment.text']}"/>
+                        <p:inputTextarea id="commentText" value="#{postBean.commentForm.text}" maxlength="1000"
+                                         placeholder="#{bundle['comment.create.text.placeholder']}" required="true"
+                                         label="#{bundle['comment.create.text.placeholder']}"
+                                         requiredMessage="#{bundle['comment.create.requiredMessage']}"/>
+                        <h:message id="commentTextMessage" for="commentText"/>
+                    </h:panelGrid>
+                    <p:commandButton id="saveComment" actionListener="#{postBean.create()}"
+                                     value="#{bundle['comment.list.dialog.create.button.save']}"
+                                     icon="ui-icon-plus"
+                                     update=":addForm:commentTextMessage :addForm:commentText :form:comments"
+                                     oncomplete="if (!args.validationFailed) addComment.hide();"/>
+                </p:dialog>
+            </h:form>
+
+        </ui:define>
+    </ui:composition>
+
+</h:body>
+</html>

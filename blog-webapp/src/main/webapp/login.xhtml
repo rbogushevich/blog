@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html" xmlns:p="http://java.sun.com/jsf/html"
+      xmlns:pa="http://xmlns.jcp.org/jsf/passthrough"
+        >
+
+<h:head>
+    <title><h:outputText value="#{bundle['login_page.title']}"/></title>
+</h:head>
+<h:body>
+    <h1><h:outputText value="#{bundle['login_page.header']}"/></h1>
+    <h:form id="loginForm" prependId="false">
+        <h:panelGrid columns="2">
+            <p:outputLabel value="#{bundle['login_page.login']}" for="j_username"/>
+            <h:inputText id="j_username" pa:autofocus="true" label="#{bundle['login_page.login.label']}"
+                         maxlength="100"/>
+            <p:outputLabel value="#{bundle['login_page.password']}" for="j_password"/>
+            <p:inputSecret id="j_password" label="#{bundle['login_page.password.label']}"/>
+            <h:commandButton type="submit" id="login" action="#{authenticationBean.doLogin()}"
+                             value="#{bundle['login_page.button.login']}"/>
+        </h:panelGrid>
+        <h:messages/>
+    </h:form>
+</h:body>
+</html>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.2//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="rb.home.blog.dao.PostDao">
+    <cache/>
+    <insert id="create" parameterType="rb.home.blog.domain.PostImpl"
+            useGeneratedKeys="true" keyProperty="id">
+        insert into post
+        (header, text , date , user_id)
+        values
+        (#{header},#{text},#{date},#{author.id, javaType=long})
+    </insert>
+
+    <resultMap id="postMap" type="rb.home.blog.domain.PostImpl">
+        <id property="id" column="post_id"/>
+        <result property="header" column="post_header"/>
+        <result property="text" column="post_text"/>
+        <result property="date" column="post_date"/>
+        <association property="author" resultMap="authorMap"/>
+    </resultMap>
+
+
+    <resultMap id="authorMap" type="rb.home.blog.domain.UserImpl">
+        <id property="id" column="user_id"/>
+        <result property="login" column="user_login"/>
+        <result property="password" column="user_password"/>
+    </resultMap>
+
+    <select id="selectCommentsForPost" resultType="rb.home.blog.domain.CommentImpl">
+        select * from comment c where c.post_id = #{id}
+    </select>
+
+    <select id="findById" parameterType="java.lang.Long" resultMap="postMap">
+        select
+        p.id as post_id,
+        p.header as post_header,
+        p.text as post_text,
+        p.date as post_date,
+        u.id as user_id,
+        u.login as user_login,
+        u.password as user_password,
+        c.id as comment_id,
+        c.text as comment_text
+        from post p
+        left outer join user u on p.user_id = u.id
+        left outer join comment c on c.post_id = p.id
+        where p.id = #{id}
+    </select>
+
+    <select id="find" parameterType="map" resultMap="postMap">
+        select
+        p.id as post_id,
+        p.header as post_header,
+        p.text as post_text,
+        p.date as post_date,
+        u.id as user_id,
+        u.login as user_login,
+        u.password as user_password
+        from post p left join user u on p.user_id = u.id
+        limit #{count} offset #{start}
+    </select>
+
+    <select id="findAll" resultMap="postMap">
+        select
+        p.id as post_id,
+        p.header as post_header,
+        p.text as post_text,
+        p.date as post_date,
+        u.id as user_id,
+        u.login as user_login,
+        u.password as user_password
+        from post p left join user u on p.user_id = u.id
+    </select>
+
+    <select id="count" resultType="java.lang.Long">
+        select count(*)
+        from post
+    </select>
+
+    <delete id="deleteById">
+      delete from post where id = #{id}
+    </delete>
+
+    <update id="update">
+        update post set
+        header = #{header},
+        text = #{text},
+        date = #{date}
+        where id = #{id}
+    </update>
+
+</mapper>

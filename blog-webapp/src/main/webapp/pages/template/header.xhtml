@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+<body>
+<ui:composition>
+    <h1><h:outputText value="#{bundle['header']}"/></h1>
+    <h:form>
+        <h:commandLink value="ru" action="#{localeBean.setLanguage('ru')}"/>
+        |
+        <h:commandLink value="en" action="#{localeBean.setLanguage('en')}"/>
+        |
+        <h:outputLink value="#{request.contextPath}/j_spring_security_logout">#{bundle['logout']}</h:outputLink>
+    </h:form>
+</ui:composition>
+</body>
+</html>

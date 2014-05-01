@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+<h:body>
+    <ui:composition template="/pages/template/layout.xhtml">
+        <ui:define name="title">#{bundle['post.list.header.title']}</ui:define>
+        <ui:define name="content">
+            <h:form id="form">
+                <p:dataTable id="posts"
+                             value="#{postListBean.model}"
+                             var="post"
+                             selectionMode="single"
+                             lazy="true"
+                             selection="#{postListBean.selectedItem}"
+                             paginator="true"
+                             rows="#{bundle['post.list.rowsPerPage']}"
+                             rowsPerPageTemplate="#{bundle['post.list.rowsPerPageTemplate']}"
+                             sortBy="date"
+                             paginatorPosition="bottom">
+                    <p:ajax event="rowSelect" update=":form:deleteButton :form:editPostButton :form:viewPostButton"/>
+                    <p:ajax event="page" listener="#{postListBean.unselect()}"
+                            update=":form:deleteButton :form:editPostButton :form:viewPostButton"/>
+                    <p:column width="50%" headerText="#{bundle['post.list.header.header']}">
+                        <h:outputText value="#{post.header}"/>
+                    </p:column>
+                    <p:column width="20%" headerText="#{bundle['post.list.header.author']}">
+                        <h:outputText value="#{post.author.login}"/>
+                    </p:column>
+                    <p:column width="30%" headerText="#{bundle['post.list.header.date']}">
+                        <p:outputLabel value="#{post.date}">
+                            <f:convertDateTime pattern="#{bundle['post.list.date_format']}"/>
+                        </p:outputLabel>
+                    </p:column>
+                </p:dataTable>
+                <h:panelGrid id="buttonGrid" columns="4">
+                    <p:commandButton id="addPostButton" value="#{bundle['post.list.button.add']}"
+                                     update=":addForm :form:buttonGrid" icon="ui-icon-plus"
+                                     action="#{postListBean.prepareAddForm()}"
+                                     oncomplete="PF('addPost').show()"/>
+                    <p:commandButton id="editPostButton" value="#{bundle['post.list.button.edit']}"
+                                     update=":addForm :form:buttonGrid" disabled="#{postListBean.selectedItem == null}"
+                                     action="#{postListBean.prepareEditForm()}" icon="ui-icon-pencil"
+                                     oncomplete="PF('addPost').show()"/>
+                    <p:commandButton id="viewPostButton" value="#{bundle['post.list.button.view']}"
+                                     disabled="#{postListBean.selectedItem == null}"
+                                     action="#{postListBean.redirectToPost()}" icon="ui-icon-document"/>
+                    <p:commandButton id="deleteButton" value="#{bundle['post.list.button.remove']}"
+                                     actionListener="#{postListBean.delete()}"
+                                     update="formMessage :form"
+                                     disabled="#{postListBean.selectedItem == null}"
+                                     icon="ui-icon-close">
+                        <p:confirm header="#{bundle['post.delete.confirm.header']}"
+                                   message="#{bundle['post.delete.confirm.message']}" icon="ui-icon-alert"/>
+                    </p:commandButton>
+                </h:panelGrid>
+                <p:confirmDialog global="true">
+                    <p:commandButton value="#{bundle['post.delete.confirm.button.yes']}" type="button"
+                                     styleClass="ui-confirmdialog-yes" icon="ui-icon-check"/>
+                    <p:commandButton value="#{bundle['post.delete.confirm.button.no']}" type="button"
+                                     styleClass="ui-confirmdialog-no" icon="ui-icon-close"/>
+                </p:confirmDialog>
+                <h:messages id="formMessage" globalOnly="true" for="form"/>
+            </h:form>
+
+            <h:form id="addForm">
+                <p:dialog id="dialog"
+                          header="#{postListBean.editMode ? bundle['post.list.dialog.edit.header']:
+                      bundle['post.list.dialog.add.header']}"
+                          widgetVar="addPost"
+                          resizable="false"
+                          width="600"
+                          modal="true">
+
+                    <h:panelGrid id="addGrid" columns="1" cellpadding="4"
+                                 columnClasses="add_post left_column, add_post right_column">
+                        <p:row>
+                            <h:outputText value="#{bundle['post.header']}"/>
+                            <p:inputText id="header" value="#{postListBean.postForm.header}" maxlength="100"
+                                         placeholder="#{bundle['post.create.header.placeholder']}" required="true"
+                                         label="#{bundle['post.create.header.placeholder']}"
+                                         requiredMessage="#{bundle['post.create.requiredMessage']}"/>
+                        </p:row>
+                        <p:row>
+                            <h:message id="headerMessage" for="header"/>
+                        </p:row>
+                        <p:row>
+                            <h:outputText value="#{bundle['post.text']}"/>
+                            <p:inputTextarea id="text" value="#{postListBean.postForm.text}" maxlength="1000" rows="6"
+                                             placeholder="#{bundle['post.create.text.placeholder']}" required="true"
+                                             label="#{bundle['post.create.text']}"
+                                             requiredMessage="#{bundle['post.create.requiredMessage']}"/>
+                        </p:row>
+                        <p:row>
+                            <h:message id="textMessage" for="text"/>
+                        </p:row>
+                        <p:row>
+                            <h:outputText value="#{bundle['post.author']}"/>
+                            :
+                            <p:outputLabel id="author" value="#{postListBean.postForm.author.login}"/>
+                        </p:row>
+                        <p:row>
+                            <h:outputText value="#{bundle['post.date']}"/>
+                            :
+                            <p:outputLabel id="date" value="#{postListBean.postForm.date}">
+                                <f:convertDateTime pattern="#{bundle['post.list.date_format']}"/>
+                            </p:outputLabel>
+                        </p:row>
+                    </h:panelGrid>
+                    <p:commandButton id="savePost" actionListener="#{postListBean.addFormSubmit()}"
+                                     value="#{postListBean.editMode ? bundle['post.list.dialog.edit.button.save']:
+                                     bundle['post.list.dialog.add.button.add']}"
+                                     icon="ui-icon-plus"
+                                     update=":addForm:text :addForm:textMessage :addForm:header :addForm:headerMessage
+                                      :form:posts"
+                                     oncomplete="if (!args.validationFailed) addPost.hide();"/>
+                </p:dialog>
+            </h:form>
+
+        </ui:define>
+    </ui:composition>
+
+</h:body>
+</html>

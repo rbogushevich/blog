@@ -1,0 +1,17 @@
+*.iml
+.settings
+target
+out
+.idea
+*.log
+.metadata
+*.*~
+*.bak
+.classpath
+.project
+*.war
+*.ear
+*.ipr
+*.iws
+*.ids
+*.db
