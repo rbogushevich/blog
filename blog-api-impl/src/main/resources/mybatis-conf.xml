@@ -8,7 +8,4 @@
         <setting name="lazyLoadingEnabled" value="true"/>
         <setting name="logImpl" value="SLF4J"/>
     </settings>
-    <mappers>
-        <package name="rb/home/blog/dao"/>
-    </mappers>
 </configuration>
