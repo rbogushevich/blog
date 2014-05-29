@@ -29,7 +29,7 @@ public class CommentServiceImpl extends CommonServiceBase<Comment, Long> impleme
     @Override
     @Transactional(readOnly = true)
     public List<Comment> findByPost(Long postId, int start, int count) {
-        logger.debug("find comments by post with id = {} from {} count {}", new Object[]{postId, start, count});
+        logger.debug("find comments by post with id = {} from {} count {}", postId, start, count);
         return ((CommentDao) commonDao).findByPost(postId, start, count);
     }
 

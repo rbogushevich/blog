@@ -138,7 +138,7 @@ public class PostBean implements Serializable {
         @Override
         public List<Comment> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
             logger.debug("load comments for post page with params: first {}, pageSize {}, sortField {}, sortOrder {}, filters{}",
-                    new Object[]{first, pageSize, sortField, sortOrder, filters});
+                    first, pageSize, sortField, sortOrder, filters);
             comments = getCommentService().findByPost(post.getId(), first, pageSize);
             setRowCount(getCommentService().countByPost(post.getId()).intValue());
             return comments;

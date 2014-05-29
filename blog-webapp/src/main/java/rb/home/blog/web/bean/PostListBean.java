@@ -163,7 +163,7 @@ public class PostListBean implements Serializable {
         @Override
         public List<Post> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
             logger.debug("load posts for postList page with params: first {}, pageSize {}, sortField {}, sortOrder {}, filters{}",
-                    new Object[]{first, pageSize, sortField, sortOrder, filters});
+                    first, pageSize, sortField, sortOrder, filters);
             posts = getPostService().find(first, pageSize);
             setRowCount(getPostService().count().intValue());
             return posts;
